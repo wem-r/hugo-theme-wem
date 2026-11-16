@@ -130,15 +130,15 @@
     var load = function (k) { try { return JSON.parse(store.get(k) || '[]') || []; } catch (e) { return []; } };
     var favs = load('wm-favs'), recent = load('wm-recent');
     var esc = function (t) { var d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; };
-    var row = function (x, star) {
+    var favRow = function (x, star) {
       return '<a href="' + esc(x.u) + '"' + (star ? '' : ' class="nr"') + '>' + (star ? '<b class="s">★</b>' : '') +
         '<span class="t">' + esc(x.t) + '</span><span class="c">' + esc(x.c) + '</span></a>';
     };
     var paint = function () {
-      $('.wm-fav-list', favBox).innerHTML = favs.length ? favs.map(function (x) { return row(x, true); }).join('')
+      $('.wm-fav-list', favBox).innerHTML = favs.length ? favs.map(function (x) { return favRow(x, true); }).join('')
         : '<p class="dim">star a tool with ☆ to pin it here</p>';
       var rec = recent.filter(function (x) { return x.u !== decodeURIComponent(location.pathname) || true; }).slice(0, 8);
-      $('.wm-recent-list', favBox).innerHTML = rec.map(function (x) { return row(x, false); }).join('');
+      $('.wm-recent-list', favBox).innerHTML = rec.map(function (x) { return favRow(x, false); }).join('');
       $$('.wm-fav-n').forEach(function (e) { e.textContent = '★ ' + favs.length; });
       $$('.wm-fav-toggle').forEach(function (b) {
         var on = favs.some(function (x) { return x.u === b.dataset.u; });
