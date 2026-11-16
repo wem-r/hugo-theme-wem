@@ -8,7 +8,7 @@
     <p><span class="wm-badge">● offline</span> <span class="dim">nothing you type leaves your browser</span></p>
     {{- end }}
     {{- with .Params.summary | default .Description }}<p>{{ . | markdownify }}</p>{{ end }}
-    {{- if .IsNode }}
+    {{- if not .IsPage }}
     {{- $n := len (where .RegularPagesRecursive "Params.tool" "!=" nil) }}
     {{- if $n }}<p class="dim">{{ $n }} {{ cond (eq $n 1) "tool" "tools" }} in here</p>{{ end }}
     {{- end }}
