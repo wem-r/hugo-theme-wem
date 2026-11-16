@@ -10,5 +10,6 @@
   {{- partial "search.html" . }}
   {{- $js := slice (resources.Get "js/wm.js") (resources.Get "js/graph.js") (resources.Get "js/search.js") | resources.Concat "js/wm.js" | minify | fingerprint }}
   <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- if templates.Exists "_partials/hooks/body-end.html" }}{{ partial "hooks/body-end.html" . }}{{ end }}
 </body>
 </html>

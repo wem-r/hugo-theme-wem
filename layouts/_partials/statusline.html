@@ -5,8 +5,9 @@
   {{- $src = printf "%s/blob/%s/%s" . (site.Params.github_branch | default "main") ($rel | replaceRE " " "%20") }}
 {{- end }}{{ end }}
 <div class="wm-status">
-  <b class="mode">NORMAL</b>
-  {{- if and .Lastmod (not .Lastmod.IsZero) }}
+  <b class="mode">{{ .Params.mode | default site.Params.wem.mode | default "NORMAL" }}</b>
+  {{- if .Params.tool }}<span class="seg">client-side only</span>{{ end }}
+  {{- if and .Lastmod (not .Lastmod.IsZero) (not .Params.tool) }}
   <span class="seg">last modified {{ .Lastmod.Format "2006-01-02" }}</span>
   {{- end }}
   {{- with $src }}

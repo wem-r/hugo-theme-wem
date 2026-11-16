@@ -374,3 +374,27 @@ body.wm-home { background: var(--wall-home, var(--wall)); background-color: var(
 .wm-whois td, .wm-whois th { border: 0 !important; padding: 1px 18px 1px 0; vertical-align: top; }
 .wm-whois td:first-child { color: var(--yel); white-space: nowrap; }
 .wm-whois thead { display: none; }
+
+/* ==========================================================================
+   Tool sites (params.wem.aside = "info"): info + favourites tiles, tree filter,
+   favourite button, form controls shared by the tools.
+   ========================================================================== */
+.wm-info p { margin: 0 0 12px; }
+.wm-info .dim, .wm-favs .dim { color: var(--dim); }
+.wm-info-tags a { color: var(--dim); margin-right: 6px; } .wm-info-tags a:hover { color: var(--cyan); }
+.wm-badge { display: inline-block; padding: 0 6px; border-radius: 3px; background: var(--line-soft); color: var(--green); font-size: 11px; }
+.wm-favs a { display: grid; grid-template-columns: 16px 1fr auto; gap: 0 4px; padding: 2px 0; color: var(--fg); }
+.wm-favs a.nr { grid-template-columns: 1fr auto; }
+.wm-favs a .s { color: var(--yel); font-weight: 400; }
+.wm-favs a .c { color: var(--dim); }
+.wm-favs a:hover .t { color: var(--cyan); }
+.wm-fav-h { margin: 16px 0 4px; }
+.wm-fav-toggle { float: right; margin-top: -2px; padding: 1px 8px; border-radius: 3px; color: var(--dim); background: var(--line-soft); font-size: 11px; }
+.wm-fav-toggle .s { color: var(--yel); }
+.wm-fav-toggle[aria-pressed="true"] { color: var(--yel); }
+.wm-filter { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; padding: 4px 8px; border-radius: var(--rad); background: var(--code-bg); }
+.wm-filter .k { color: var(--yel); }
+.wm-filter input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--fg); font: inherit; }
+.wm-tree .hide { display: none !important; }
+.wm-tree .ic-s { stroke: var(--yel); }
+.wm-tree .lb.star { color: var(--yel); }

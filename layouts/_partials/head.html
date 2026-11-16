@@ -14,7 +14,9 @@
     document.documentElement.dataset.theme = t;
   })();
 </script>
-{{- $css := slice (resources.Get "css/wm.css") (resources.Get "css/chroma.css") | resources.Concat "css/wm.css" | minify | fingerprint }}
+{{- $parts := slice (resources.Get "css/wm.css") (resources.Get "css/chroma.css") }}
+{{- with resources.Get "css/site.css" }}{{ $parts = $parts | append . }}{{ end }}
+{{- $css := $parts | resources.Concat "css/wm.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 <link rel="preload" href="{{ "fonts/roboto-mono-latin-wght-normal.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
 {{- if fileExists "static/favicon.svg" }}
@@ -34,3 +36,4 @@
 {{- end }}
 <meta name="wm-search-index" content="{{ "index.json" | relURL }}">
 <meta name="wm-graph" content="{{ "graph.json" | relURL }}">
+{{- if templates.Exists "_partials/hooks/head-end.html" }}{{ partial "hooks/head-end.html" . }}{{ end }}

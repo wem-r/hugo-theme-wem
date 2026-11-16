@@ -2,21 +2,26 @@
      Context: the root section. Rendered once per root (partialCached); the
      current page and its open folders are marked by wm.js from the URL. */ -}}
 <div class="wm-tree" role="tree">
-  <div class="tr root">{{- $rn := strings.TrimSuffix "/" .RelPermalink }}{{ with .File }}{{ $rn = printf "/%s" (path.Base .Dir) }}{{ end }}
+  <div class="tr root">{{- $rn := strings.TrimSuffix "/" .RelPermalink }}
+  {{- if .IsHome }}{{ $rn = site.Params.wem.tree_label | default "" }}{{ else }}{{ with .File }}{{ $rn = printf "/%s" (path.Base .Dir) }}{{ end }}{{ end }}
   <a class="lb" href="{{ .RelPermalink }}">~{{ $rn }}</a></div>
   {{- partial "tree-children.html" (dict "node" . "trail" slice) }}
 </div>
 
 {{- define "_partials/tree-children.html" }}
 {{- $kids := slice }}
+{{- $first := where .node.RegularPages "Params.tree_first" true }}
+{{- range $first }}{{ $kids = $kids | append . }}{{ end }}
 {{- range .node.Sections }}{{ $kids = $kids | append . }}{{ end }}
-{{- range .node.RegularPages }}{{ $kids = $kids | append . }}{{ end }}
+{{- range .node.RegularPages }}{{ if not .Params.tree_first }}{{ $kids = $kids | append . }}{{ end }}{{ end }}
 {{- $n := len $kids }}
 {{- range $i, $k := $kids }}
   {{- $last := eq (add $i 1) $n }}
   {{- /* real folder / file names from content/, like the vault */}}
   {{- $name := path.Base (strings.TrimSuffix "/" $k.RelPermalink) }}
+  {{- if ne site.Params.wem.tree_labels "slug" }}
   {{- with $k.File }}{{ if $k.IsSection }}{{ $name = path.Base .Dir }}{{ else }}{{ $name = .LogicalName }}{{ end }}{{ end }}
+  {{- end }}
   {{- if $k.IsSection }}
   <div class="tn" data-path="{{ $k.RelPermalink }}">
     <div class="tr d" role="treeitem" aria-expanded="false">
@@ -34,8 +39,12 @@
   <div class="tr f" role="treeitem" data-path="{{ $k.RelPermalink }}">
     {{- range $.trail }}<i class="g{{ if . }} pi{{ end }}"></i>{{ end }}<i class="g {{ if $last }}el{{ else }}te{{ end }}"></i>
     <span class="sp"></span>
+    {{- if eq $k.Params.tree_icon "star" }}
+    <svg class="ic ic-s" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1l-3.9 2.2.9-4.3-3.3-3 4.4-.5z"/></svg>
+    {{- else }}
     <svg class="ic ic-f" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 1.5h6l3 3v10h-9z M9.5 1.5v3h3"/></svg>
-    <a class="lb" href="{{ $k.RelPermalink }}" title="{{ $k.Title }}">{{ $name }}</a>
+    {{- end }}
+    <a class="lb{{ if eq $k.Params.tree_icon "star" }} star{{ end }}" href="{{ $k.RelPermalink }}" title="{{ $k.Title }}">{{ $name }}</a>
   </div>
   {{- end }}
 {{- end }}

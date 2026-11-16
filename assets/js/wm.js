@@ -124,6 +124,72 @@
     $$('.wm-toc a').forEach(function (a) { a.addEventListener('click', function () { show('note'); }); });
   }
 
+  /* ---------- favourites + recent (tool sites; kept in this browser only) ---------- */
+  var favBox = $('.wm-favs');
+  if (favBox) {
+    var load = function (k) { try { return JSON.parse(store.get(k) || '[]') || []; } catch (e) { return []; } };
+    var favs = load('wm-favs'), recent = load('wm-recent');
+    var esc = function (t) { var d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; };
+    var row = function (x, star) {
+      return '<a href="' + esc(x.u) + '"' + (star ? '' : ' class="nr"') + '>' + (star ? '<b class="s">★</b>' : '') +
+        '<span class="t">' + esc(x.t) + '</span><span class="c">' + esc(x.c) + '</span></a>';
+    };
+    var paint = function () {
+      $('.wm-fav-list', favBox).innerHTML = favs.length ? favs.map(function (x) { return row(x, true); }).join('')
+        : '<p class="dim">star a tool with ☆ to pin it here</p>';
+      var rec = recent.filter(function (x) { return x.u !== decodeURIComponent(location.pathname) || true; }).slice(0, 8);
+      $('.wm-recent-list', favBox).innerHTML = rec.map(function (x) { return row(x, false); }).join('');
+      $$('.wm-fav-n').forEach(function (e) { e.textContent = '★ ' + favs.length; });
+      $$('.wm-fav-toggle').forEach(function (b) {
+        var on = favs.some(function (x) { return x.u === b.dataset.u; });
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.querySelector('.s').textContent = on ? '★' : '☆';
+      });
+    };
+    var me = favBox.dataset.recentU;
+    if (me) {
+      recent = recent.filter(function (x) { return x.u !== me; });
+      recent.unshift({ u: me, t: favBox.dataset.recentT, c: favBox.dataset.recentC });
+      recent = recent.slice(0, 12);
+      store.set('wm-recent', JSON.stringify(recent));
+      recent = recent.slice(1);   // don't list the page you are on
+    }
+    $$('.wm-fav-toggle').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var i = favs.findIndex(function (x) { return x.u === b.dataset.u; });
+        if (i >= 0) favs.splice(i, 1); else favs.push({ u: b.dataset.u, t: b.dataset.t, c: b.dataset.c });
+        store.set('wm-favs', JSON.stringify(favs));
+        paint();
+      });
+    });
+    paint();
+  }
+
+  /* ---------- tree filter (params.wem.tree_filter) ---------- */
+  var filt = $('.wm-filter input');
+  if (filt && tree) {
+    var rows = $$('.tr.f', tree), nodes = $$('.tn', tree), saved = null;
+    filt.addEventListener('input', function () {
+      var q = filt.value.trim().toLowerCase();
+      if (q && !saved) saved = nodes.map(function (n) { return n.classList.contains('open'); });
+      rows.forEach(function (r) {
+        var hit = !q || r.textContent.toLowerCase().indexOf(q) >= 0 || (r.querySelector('.lb').title || '').toLowerCase().indexOf(q) >= 0;
+        r.classList.toggle('hide', !hit);
+      });
+      nodes.forEach(function (n, i) {
+        if (!q) { n.classList.remove('hide'); setOpen(n, saved ? saved[i] : n.classList.contains('open')); return; }
+        var any = $$('.tr.f:not(.hide)', n).length > 0 || $('.lb', n).textContent.toLowerCase().indexOf(q) >= 0;
+        n.classList.toggle('hide', !any);
+        setOpen(n, any);
+      });
+      if (!q) saved = null;
+    });
+    filt.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { var f = $$('.tr.f:not(.hide) a.lb', tree)[0]; if (f) location.href = f.href; }
+      if (e.key === 'Escape') { filt.value = ''; filt.dispatchEvent(new Event('input')); filt.blur(); }
+    });
+  }
+
   /* ---------- 404: show the address asked for ---------- */
   $$('.wm-404-path').forEach(function (e) { e.textContent = here; });
 
