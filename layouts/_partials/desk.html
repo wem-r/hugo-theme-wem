@@ -1,4 +1,5 @@
 {{- /* The tiled desk: [1] tree · [2] note (focused) · [3] toc · [4] graph.
+     Tool sites (aside = "info"): [3] info · [4] favourites, or with layout = "left": [3] info under the tree, no [4].
      Called with the page as context; the note body comes from "note-body.html". */ -}}
 {{- $wem := site.Params.wem }}
 {{- $root := .FirstSection }}
@@ -6,6 +7,7 @@
 {{- $rootLabel := strings.TrimSuffix "/" $root.RelPermalink }}
 {{- if $root.IsHome }}{{ $rootLabel = $wem.tree_label | default "" }}{{ else }}{{ with $root.File }}{{ $rootLabel = printf "/%s" (path.Base .Dir) }}{{ end }}{{ end }}
 {{- $aside := $wem.aside | default "toc" }}
+{{- $left := and (eq $aside "info") (eq $wem.layout "left") }}{{/* info under the tree, no favourites tile */}}
 {{- $toc := .TableOfContents }}
 {{- $nHead := len (findRE `<li>` $toc) }}
 {{- $fname := "" }}
@@ -16,7 +18,7 @@
 {{- if eq $wem.note_label "slug" }}{{ $fname = cond .IsHome "~" (path.Base (strings.TrimSuffix "/" .RelPermalink)) }}{{ end }}
 {{- $meta := printf "nvim · utf-8%s" (cond (gt .ReadingTime 0) (printf " · %d min" .ReadingTime) "") }}
 {{- if .Params.tool }}{{ $meta = printf "%s · runs locally" (lower (.CurrentSection.Title | default "tool")) }}{{ end }}
-<div class="wm-desk" id="wm-desk">
+<div class="wm-desk{{ if $left }} wm-desk-left{{ end }}" id="wm-desk">
 
   <section class="wm-t wm-t-tree" data-tab="tree" aria-label="File tree">
     <div class="wm-th"><span>[1] tree ~{{ $rootLabel }}</span><span>{{ with $wem.tree_count }}{{ len (where $root.RegularPagesRecursive "Params.tool" "!=" nil) }} {{ . }}{{ else }}{{ len $root.Sections }} {{ cond (eq (len $root.Sections) 1) "section" "sections" }}{{ end }}</span></div>
@@ -32,7 +34,7 @@
     <div class="wm-tb wm-scroll" id="wm-scroll">
       <article class="wm-content">
         {{- partial "breadcrumb.html" . }}
-        {{- if eq $aside "info" }}{{ if .IsPage }}<button class="wm-fav-toggle" type="button" data-u="{{ .RelPermalink }}" data-t="{{ path.Base (strings.TrimSuffix "/" .RelPermalink) }}" data-c="{{ lower .CurrentSection.Title }}" aria-pressed="false"><span class="s">☆</span> favourite</button>{{ end }}{{ end }}
+        {{- if and (eq $aside "info") (not $left) }}{{ if .IsPage }}<button class="wm-fav-toggle" type="button" data-u="{{ .RelPermalink }}" data-t="{{ path.Base (strings.TrimSuffix "/" .RelPermalink) }}" data-c="{{ lower .CurrentSection.Title }}" aria-pressed="false"><span class="s">☆</span> favourite</button>{{ end }}{{ end }}
         <h1>{{ .Title }}</h1>
         {{- with .Params.description }}<p class="wm-lead">{{ . | markdownify }}</p>{{ end }}
         {{- partial "note-body.html" . }}
@@ -66,6 +68,8 @@
     <button type="button" data-show="note" class="on">note</button>
     <button type="button" data-show="tree">tree</button>
     <button type="button" data-show="toc">{{ if eq $aside "info" }}info{{ else }}toc{{ end }}</button>
+    {{- if not $left }}
     <button type="button" data-show="graph">{{ if eq $aside "info" }}favourites{{ else }}graph{{ end }}</button>
+    {{- end }}
   </nav>
 </div>

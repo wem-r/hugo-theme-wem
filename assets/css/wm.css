@@ -301,6 +301,17 @@ kbd { font: inherit; padding: 0 5px; border: 1px solid var(--line); border-radiu
 .wm-search-res li.on .t { color: var(--yel); }
 .wm-search-res mark { background: none; color: var(--pink); }
 
+/* ---------- tool sites, layout = "left": info under the tree, note takes the rest ---------- */
+.wm-desk-left {
+  grid-template-columns: var(--tree-w) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "tree note" "toc note";
+}
+@media (min-width: 901px) { .wm-desk-left .wm-t-toc .wm-tb { max-height: 34vh; overflow: auto; } }
+.wm-about { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--dim); font-size: 11px; line-height: 1.7; }
+.wm-info .wm-about p { margin: 0; }
+.wm-about a { color: var(--cyan); }
+
 /* ---------- phone / narrow: one tile at a time, tabs at the bottom ---------- */
 @media (max-width: 900px) {
   :root { --gap: 8px; }
