@@ -195,9 +195,10 @@
 
   /* ---------- keyboard: 1-9 workspaces, / search, j/k scroll, g/G top/bottom ---------- */
   document.addEventListener('keydown', function (ev) {
-    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (ev.defaultPrevented || ev.ctrlKey || ev.metaKey || ev.altKey) return;
     var tag = (ev.target.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'textarea' || ev.target.isContentEditable) return;
+    if (tag === 'input' || tag === 'textarea' || tag === 'select' || ev.target.isContentEditable) return;
+    if (ev.target.closest && ev.target.closest('[data-keys]')) return; // widgets that use the keyboard themselves
     if (/^[0-9]$/.test(ev.key)) {
       var ws = $('.wm-ws a[data-key="' + ev.key + '"]');
       if (ws) { ev.preventDefault(); location.href = ws.href; }
