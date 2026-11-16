@@ -2,7 +2,7 @@
      [3] info — what the page is, its tags, related KB note, credits
      [4] favourites — starred and recently opened pages, kept in this browser only (wm.js) */ -}}
 <aside class="wm-t wm-t-toc" data-tab="toc" aria-label="Information">
-  <div class="wm-th"><span>[3] info</span><span>{{ path.Base (strings.TrimSuffix "/" .RelPermalink) | default "~" }}</span></div>
+  <div class="wm-th"><span>[3] info</span><span>{{ cond .IsHome "~" (path.Base (strings.TrimSuffix "/" .RelPermalink)) }}</span></div>
   <div class="wm-tb wm-info">
     {{- if .Params.tool }}
     <p><span class="wm-badge">● offline</span> <span class="dim">nothing you type leaves your browser</span></p>
