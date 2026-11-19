@@ -7,9 +7,6 @@
 <aside class="wm-t wm-t-toc" data-tab="toc" aria-label="Information">
   <div class="wm-th"><span>[3] info</span><span>{{ cond .IsHome "~" (path.Base (strings.TrimSuffix "/" .RelPermalink)) }}</span></div>
   <div class="wm-tb wm-info">
-    {{- if .Params.tool }}
-    <p><span class="wm-badge">● offline</span> <span class="dim">nothing you type leaves your browser</span></p>
-    {{- end }}
     {{- if or (not .IsPage) (ne $wem.info_desc false) }}
     {{- with .Params.summary | default .Description }}<p>{{ . | markdownify }}</p>{{ end }}
     {{- end }}

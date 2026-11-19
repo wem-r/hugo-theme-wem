@@ -17,7 +17,7 @@
 {{- else }}{{ $fname = printf "%s/" (.Title | urlize) }}{{ end }}
 {{- if eq $wem.note_label "slug" }}{{ $fname = cond .IsHome "~" (path.Base (strings.TrimSuffix "/" .RelPermalink)) }}{{ end }}
 {{- $meta := printf "nvim · utf-8%s" (cond (gt .ReadingTime 0) (printf " · %d min" .ReadingTime) "") }}
-{{- if .Params.tool }}{{ $meta = printf "%s · runs locally" (lower (.CurrentSection.Title | default "tool")) }}{{ end }}
+{{- if .Params.tool }}{{ $meta = lower (.CurrentSection.Title | default "tool") }}{{ end }}
 <div class="wm-desk{{ if $left }} wm-desk-left{{ end }}" id="wm-desk">
 
   <section class="wm-t wm-t-tree" data-tab="tree" aria-label="File tree">
